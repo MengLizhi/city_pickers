@@ -23,7 +23,12 @@ class FullPage extends StatefulWidget {
   final Map<String, dynamic> citiesData;
 
   FullPage(
-      {this.locationCode, this.showType, this.provincesData, this.citiesData});
+      {
+        required this.locationCode, 
+        required this.showType, 
+        required this.provincesData, 
+        required this.citiesData
+      });
 
   @override
   _FullPageState createState() => _FullPageState();
@@ -41,37 +46,39 @@ class HistoryPageInfo {
   Status status;
   List<Point> itemList;
 
-  HistoryPageInfo({this.status, this.itemList});
+  HistoryPageInfo({
+    required this.status, 
+    required this.itemList});
 }
 
 class _FullPageState extends State<FullPage> {
   /// list scroll control
-  ScrollController scrollController;
+  ScrollController? scrollController;
 
   /// provinces object [Point]
-  List<Point> provinces;
+  List<Point>? provinces;
 
   /// cityTree modal ,for building tree that root is province
-  CityTree cityTree;
+  CityTree? cityTree;
 
   /// page current statue, show p or a or c or over
-  Status pageStatus;
+  Status? pageStatus;
 
   /// show items maybe province city or area;
 
-  List<Point> itemList;
+  List<Point>? itemList;
 
   /// body history, the max length is three
   List<HistoryPageInfo> _history = [];
 
   /// the target province user selected
-  Point targetProvince;
+  Point? targetProvince;
 
   /// the target city user selected
-  Point targetCity;
+  Point? targetCity;
 
   /// the target area user selected
-  Point targetArea;
+  Point? targetArea;
 
   @override
   void initState() {
@@ -91,7 +98,7 @@ class _FullPageState extends State<FullPage> {
   }
 
   Future<bool> back() {
-    HistoryPageInfo last = _history.length > 0 ? _history.last : null;
+    HistoryPageInfo? last = _history.length > 0 ? _history.last : null;
     if (last != null && mounted) {
       this.setState(() {
         pageStatus = last.status;
@@ -114,11 +121,11 @@ class _FullPageState extends State<FullPage> {
         return;
       }
 
-      targetProvince = cityTree.initTreeByCode(_locationCode);
-      if (targetProvince.isNull) {
-        targetProvince = cityTree.initTreeByCode(provinces.first.code);
+      targetProvince = cityTree?.initTreeByCode(_locationCode);
+      if (targetProvince == null ) {
+        targetProvince = cityTree?.initTreeByCode(provinces?.first.code ?? 0);
       }
-      targetProvince.child.forEach((Point _city) {
+      targetProvince?.child.forEach((Point _city) {
         if (_city.code == _locationCode) {
           targetCity = _city;
           targetArea = _getTargetChildFirst(_city) ?? null;
@@ -132,7 +139,7 @@ class _FullPageState extends State<FullPage> {
       });
     } else {
       targetProvince =
-          cityTree.initTreeByCode(int.parse(widget.provincesData.keys.first));
+          cityTree?.initTreeByCode(int.parse(widget.provincesData.keys.first));
     }
 
     if (targetCity == null) {
@@ -148,22 +155,22 @@ class _FullPageState extends State<FullPage> {
     ShowType showType = widget.showType;
     try {
       if (showType.contain(ShowType.p)) {
-        result.provinceId = targetProvince.code.toString();
-        result.provinceName = targetProvince.name;
+        result.provinceId = targetProvince?.code.toString();
+        result.provinceName = targetProvince?.name;
       }
       if (showType.contain(ShowType.c)) {
-        result.provinceId = targetProvince.code.toString();
-        result.provinceName = targetProvince.name;
-        result.cityId = targetCity != null ? targetCity.code.toString() : null;
-        result.cityName = targetCity != null ? targetCity.name : null;
+        result.provinceId = targetProvince?.code.toString();
+        result.provinceName = targetProvince?.name;
+        result.cityId = targetCity != null ? targetCity!.code.toString() : null;
+        result.cityName = targetCity != null ? targetCity!.name : null;
       }
       if (showType.contain(ShowType.a)) {
-        result.provinceId = targetProvince.code.toString();
-        result.provinceName = targetProvince.name;
-        result.cityId = targetCity != null ? targetCity.code.toString() : null;
-        result.cityName = targetCity != null ? targetCity.name : null;
-        result.areaId = targetArea != null ? targetArea.code.toString() : null;
-        result.areaName = targetArea != null ? targetArea.name : null;
+        result.provinceId = targetProvince?.code.toString();
+        result.provinceName = targetProvince?.name;
+        result.cityId = targetCity != null ? targetCity?.code.toString() : null;
+        result.cityName = targetCity != null ? targetCity?.name : null;
+        result.areaId = targetArea != null ? targetArea?.code.toString() : null;
+        result.areaName = targetArea != null ? targetArea?.name : null;
       }
     } catch (e) {
       print('Exception details:\n _buildResult error \n $e');
@@ -180,7 +187,7 @@ class _FullPageState extends State<FullPage> {
     return result;
   }
 
-  Point _getTargetChildFirst(Point target) {
+  Point? _getTargetChildFirst(Point? target) {
     if (target == null) {
       return null;
     }
@@ -196,7 +203,7 @@ class _FullPageState extends State<FullPage> {
 
   _onProvinceSelect(Point province) {
     this.setState(() {
-      targetProvince = cityTree.initTree(province.code);
+      targetProvince = cityTree?.initTree(province.code ?? 0);
     });
   }
 
@@ -213,18 +220,22 @@ class _FullPageState extends State<FullPage> {
   }
 
   int _getSelectedId() {
-    int selectId;
+    int selectId = 0;
     switch (pageStatus) {
       case Status.Province:
-        selectId = targetProvince.code;
+        selectId = targetProvince != null && targetProvince!.code != null ? targetProvince!.code! : 0;
         break;
       case Status.City:
-        selectId = targetCity.code;
+      
+        selectId = targetCity != null && targetCity!.code != null ? targetCity!.code! : 0;
         break;
       case Status.Area:
-        selectId = targetArea.code;
+      
+        selectId = targetArea != null && targetArea!.code != null ? targetArea!.code! : 0;
         break;
       case Status.Over:
+        break;
+      default:
         break;
     }
     return selectId;
@@ -233,18 +244,25 @@ class _FullPageState extends State<FullPage> {
   /// 所有选项的点击事件入口
   /// @param targetPoint 被点击对象的point对象
   _onItemSelect(Point targetPoint) {
-    _history.add(HistoryPageInfo(itemList: itemList, status: pageStatus));
-    Status nextStatus;
-    List<Point> nextItemList;
+    if (itemList != null && pageStatus != null) {
+      _history.add(HistoryPageInfo(itemList: itemList!, status: pageStatus!));
+    }
+    
+    Status nextStatus = Status.Province;
+    List<Point>? nextItemList;
     switch (pageStatus) {
       case Status.Province:
         _onProvinceSelect(targetPoint);
         nextStatus = Status.City;
-        nextItemList = targetProvince.child;
+        
+        if(targetProvince != null) {
+          nextItemList = targetProvince!.child;
+        }
+        
         if (!widget.showType.contain(ShowType.c)) {
           nextStatus = Status.Over;
         }
-        if (nextItemList.isEmpty) {
+        if (nextItemList != null && nextItemList.isEmpty) {
           targetCity = null;
           targetArea = null;
           nextStatus = Status.Over;
@@ -253,11 +271,15 @@ class _FullPageState extends State<FullPage> {
       case Status.City:
         _onCitySelect(targetPoint);
         nextStatus = Status.Area;
-        nextItemList = targetCity.child;
+
+        if(targetCity != null) {
+          nextItemList = targetCity!.child;
+        }
+        
         if (!widget.showType.contain(ShowType.a)) {
           nextStatus = Status.Over;
         }
-        if (nextItemList.isEmpty) {
+        if (nextItemList != null && nextItemList.isEmpty) {
           targetArea = null;
           nextStatus = Status.Over;
         }
@@ -267,6 +289,8 @@ class _FullPageState extends State<FullPage> {
         _onAreaSelect(targetPoint);
         break;
       case Status.Over:
+        break;
+      default:
         break;
     }
 
@@ -281,7 +305,7 @@ class _FullPageState extends State<FullPage> {
               itemList = nextItemList;
               pageStatus = nextStatus;
             });
-            scrollController.jumpTo(0.0);
+            scrollController?.jumpTo(0.0);
           }
         });
   }
@@ -292,12 +316,14 @@ class _FullPageState extends State<FullPage> {
       case Status.Province:
         break;
       case Status.City:
-        title = targetProvince.name;
+        title = targetProvince?.name ?? '';
         break;
       case Status.Area:
-        title = targetCity.name;
+        title = targetCity?.name ?? '';
         break;
       case Status.Over:
+        break;
+      default:
         break;
     }
     return Text(title);
@@ -315,8 +341,8 @@ class _FullPageState extends State<FullPage> {
           body: SafeArea(
               bottom: true,
               child: ListWidget(
-                itemList: itemList,
-                controller: scrollController,
+                itemList: itemList!,
+                controller: scrollController!,
                 onSelect: _onItemSelect,
                 selectedId: _getSelectedId(),
               ))),
@@ -330,7 +356,7 @@ class ListWidget extends StatelessWidget {
   final int selectedId;
   final ValueChanged<Point> onSelect;
 
-  ListWidget({this.itemList, this.onSelect, this.controller, this.selectedId});
+  ListWidget({required this.itemList, required this.onSelect, required this.controller, required this.selectedId});
 
   @override
   Widget build(BuildContext context) {

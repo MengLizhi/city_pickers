@@ -12,29 +12,30 @@ import 'dart:convert';
 /// CityPicker 返回的 **Result** 结果函数
 class Result {
   /// provinceId
-  String provinceId;
+  String? provinceId;
 
   /// cityId
-  String cityId;
+  String? cityId;
 
   /// areaId
-  String areaId;
+  String? areaId;
 
-  String villageId;// 增加第4级(村/镇)选择
+  String? villageId;// 增加第4级(村/镇)选择
 
   /// provinceName
-  String provinceName;
+  String? provinceName;
 
   /// cityName
-  String cityName;
+  String? cityName;
 
   /// areaName
-  String areaName;
+  String? areaName;
 
-  String villageName;// 增加第4级(村/镇)选择
+  String? villageName;// 增加第4级(村/镇)选择
 
   Result(
-      {this.provinceId,
+      {
+      this.provinceId,
       this.cityId,
       this.areaId,
       // 增加第4级(村/镇)选择

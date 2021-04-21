@@ -57,8 +57,8 @@ class Alpha extends StatefulWidget {
   /// 当选中的字母发生改变
   final AlphaChanged onAlphaChange;
 
-  final OnTouchStart onTouchStart;
-  final OnTouchMove onTouchMove;
+  OnTouchStart? onTouchStart;
+  OnTouchMove? onTouchMove;
   final OnTouchEnd onTouchEnd;
 
   /// 激活状态下的背景色
@@ -83,10 +83,10 @@ class Alpha extends StatefulWidget {
       this.alphas = ALPHAS_INDEX,
 
       /// 当右侧字母集, 因触摸而产生的回调
-      this.onAlphaChange,
+      required this.onAlphaChange,
       this.onTouchStart,
       this.onTouchMove,
-      this.onTouchEnd,
+      required this.onTouchEnd,
       this.activeBgColor = Colors.green,
       this.bgColor = Colors.yellow,
       this.fontColor = Colors.black,
@@ -106,10 +106,10 @@ class AlphaState extends State<Alpha> {
   List<double> indexRange = [];
 
   /// 第一个字母或者分类距离global坐标系的高度
-  double _distance2Top;
+  double? _distance2Top;
 
   // 当触摸结束前, 最后一个字母;
-  String _lastTag;
+  String? _lastTag;
 
   @override
   void initState() {
@@ -124,7 +124,7 @@ class AlphaState extends State<Alpha> {
     }
   }
 
-  String _getHitAlpha(offset) {
+  String? _getHitAlpha(offset) {
     int hit = (offset / widget.alphaItemSize).toInt();
     if (hit < 0) {
       return null;
@@ -135,14 +135,14 @@ class AlphaState extends State<Alpha> {
     return widget.alphas[hit];
   }
 
-  _onAlphaChange([String tag]) {
-    if (widget.onAlphaChange != null && tag != _lastTag) {
+  _onAlphaChange([String? tag]) {
+    if (widget.onAlphaChange != null && tag != null && tag != _lastTag) {
       _lastTag = tag;
       widget.onAlphaChange(tag);
     }
   }
 
-  _touchStartEvent(String tag) {
+  _touchStartEvent(String? tag) {
     this.setState(() {
       isTouched = true;
     });
@@ -151,7 +151,7 @@ class AlphaState extends State<Alpha> {
     }
 
     if (widget.onTouchStart != null && tag != null) {
-      widget.onTouchStart();
+      widget.onTouchStart!();
     }
   }
 
@@ -160,7 +160,7 @@ class AlphaState extends State<Alpha> {
       _onAlphaChange(tag);
     }
     if (widget.onTouchMove != null) {
-      widget.onTouchMove();
+      widget.onTouchMove!();
     }
   }
 
@@ -205,7 +205,7 @@ class AlphaState extends State<Alpha> {
     return GestureDetector(
         onVerticalDragDown: (DragDownDetails details) {
           if (_distance2Top == null) {
-            RenderBox renderBox = context.findRenderObject();
+            RenderBox renderBox = context.findRenderObject() as RenderBox;
             _distance2Top = renderBox.localToGlobal(Offset.zero).dy.toInt() +
                 (renderBox.size.height -
                         widget.alphaItemSize * widget.alphas.length) /
@@ -213,14 +213,16 @@ class AlphaState extends State<Alpha> {
           }
 
           int touchOffset2Begin =
-              details.globalPosition.dy.toInt() - _distance2Top.toInt();
-          String tag = _getHitAlpha(touchOffset2Begin);
-          _touchStartEvent(tag);
+              details.globalPosition.dy.toInt() - ( _distance2Top?.toInt() ?? 0 );
+          String? tag = _getHitAlpha(touchOffset2Begin);
+          if(tag != null){
+            _touchStartEvent(tag);
+          }
         },
         onVerticalDragUpdate: (DragUpdateDetails details) {
           int touchOffset2Begin =
-              details.globalPosition.dy.toInt() - _distance2Top.toInt();
-          String tag = _getHitAlpha(touchOffset2Begin);
+              details.globalPosition.dy.toInt() - ( _distance2Top?.toInt() ?? 0 );
+          String? tag = _getHitAlpha(touchOffset2Begin);
           if (tag != null) {
             _touchMoveEvent(tag);
           }

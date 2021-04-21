@@ -16,13 +16,14 @@ class CityPickerRoute<T> extends PopupRoute<T> {
   final bool canBarrierDismiss;
   final Widget child;
   final double barrierOpacity;
+  AnimationController? _animationController;
 
   CityPickerRoute({
-    this.theme,
-    this.child,
+    required this.theme,
+    required this.child,
     this.canBarrierDismiss = true,
     this.barrierOpacity = 0.5,
-    this.barrierLabel,
+    required this.barrierLabel,
   });
 
   @override
@@ -35,14 +36,14 @@ class CityPickerRoute<T> extends PopupRoute<T> {
   @override
   bool get barrierDismissible => canBarrierDismiss;
 
-  AnimationController _animationController;
+  
 
   @override
   AnimationController createAnimationController() {
     assert(_animationController == null);
     _animationController =
-        BottomSheet.createAnimationController(navigator.overlay);
-    return _animationController;
+        BottomSheet.createAnimationController(navigator!.overlay!);
+    return _animationController!;
   }
 
   @override

@@ -18,14 +18,14 @@ class CityOffsetRange {
   double end;
   String tag;
 
-  CityOffsetRange({this.start, this.end, this.tag});
+  CityOffsetRange({required this.start, required this.end, required this.tag});
 }
 
 class TagCount {
   int count;
   String letter;
 
-  TagCount({this.count, this.letter});
+  TagCount({required this.count, required this.letter});
 }
 
 class CitiesUtils {
@@ -35,7 +35,7 @@ class CitiesUtils {
     List<Point> trees = [];
     List<Point> cities = [];
     CityTree citiesTreeBuilder =
-        new CityTree(metaInfo: citiesMeta, provincesInfo: provinceMeta);
+        new CityTree(metaInfo: citiesMeta, provincesInfo: (provinceMeta as Map<String, String>));
     provinceMeta.forEach((key, value) {
       trees.add(citiesTreeBuilder.initTree(int.parse(key)));
     });
@@ -43,10 +43,18 @@ class CitiesUtils {
       cities.addAll(tree.child);
     });
     cities.sort((Point a, Point b) {
-      return a.letter.codeUnitAt(0) - b.letter.codeUnitAt(0);
+      if(a.letter != null && b.letter != null ) {
+        return a.letter!.codeUnitAt(0) - b.letter!.codeUnitAt(0);
+      } else {
+        return 0;
+      }
+      
     });
     cities.forEach((Point point) {
-      point.letter = point.letter.toUpperCase();
+      if(point.letter != null) {
+        point.letter = point.letter!.toUpperCase();
+      }
+      
     });
     return cities;
   }
@@ -57,27 +65,30 @@ class CitiesUtils {
     /// 先分类
     String lastTag = '';
     citiesList.forEach((Point item) {
-      if (item.letter != lastTag) {
-        validTags.add(item.letter);
-        lastTag = item.letter;
+      if (item.letter != null && item.letter != lastTag) {
+        validTags.add(item.letter!);
+        lastTag = item.letter!;
       }
     });
     return validTags;
   }
 
   static List<CityOffsetRange> getOffsetRangeByCitiesList(
-      {@required List<Point> lists,
-      @required double itemHeight,
-      @required double tagHeight}) {
+    {
+      required List<Point> lists,
+      required double itemHeight,
+      required double tagHeight
+    }
+  ) {
     List<TagCount> categoriesList = [];
     List<CityOffsetRange> result = [];
 
     /// 先分类
     String lastTag = '';
     lists.forEach((Point item) {
-      if (item.letter != lastTag) {
-        categoriesList.add(TagCount(letter: item.letter, count: 0));
-        lastTag = item.letter;
+      if (item.letter !=null && item.letter != lastTag) {
+        categoriesList.add(TagCount(letter: item.letter!, count: 0));
+        lastTag = item.letter!;
       }
     });
     lists.forEach((Point item) {
@@ -103,5 +114,5 @@ class HotCity {
   final String name;
   final int id;
   final String tag;
-  HotCity({@required this.name, @required this.id, this.tag = "★"});
+  HotCity({required this.name, required this.id, this.tag = "★"});
 }

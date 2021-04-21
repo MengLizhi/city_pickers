@@ -35,7 +35,10 @@ class CityPickers {
   static Map<String, dynamic> metaProvinces = meta.provincesData;
 
   static utils(
-      {Map<String, dynamic> provinceData, Map<String, dynamic> citiesData}) {
+      {
+        Map<String, dynamic>? provinceData, 
+        Map<String, dynamic>? citiesData
+      }) {
     print("CityPickers.metaProvinces::: ${CityPickers.metaCities}");
     return CityPickerUtil(
       provincesData: provinceData ?? CityPickers.metaProvinces,
@@ -61,23 +64,25 @@ class CityPickers {
   ///
   /// @return Result see [Result]
   ///
-  static Future<Result> showCityPicker(
-      {@required BuildContext context,
-      showType = ShowType.pca,
-      double height = 400.0,
-      String locationCode = '110000',
-      ThemeData theme,
-      Map<String, dynamic> citiesData,
-      Map<String, dynamic> provincesData,
-      // CityPickerRoute params
-      bool barrierDismissible = true,
-      double barrierOpacity = 0.5,
-      ItemWidgetBuilder itemBuilder,
-      double itemExtent,
-      Widget cancelWidget,
-      Widget confirmWidget,
-      bool isSort = false}) {
-    return Navigator.of(context, rootNavigator: true).push(
+  static Future<Result?> showCityPicker(
+      {
+        required BuildContext context,
+        showType = ShowType.pca,
+        double height = 400.0,
+        String locationCode = '110000',
+        ThemeData? theme,
+        Map<String, dynamic>? citiesData,
+        Map<String, dynamic>? provincesData,
+        // CityPickerRoute params
+        bool barrierDismissible = true,
+        double barrierOpacity = 0.5,
+        ItemWidgetBuilder? itemBuilder,
+        double? itemExtent,
+        Widget? cancelWidget,
+        Widget? confirmWidget,
+        bool isSort = false
+      }) {
+    return Navigator.of(context, rootNavigator: true).push<Result>(
       new CityPickerRoute(
           theme: theme ?? Theme.of(context),
           canBarrierDismiss: barrierDismissible,
@@ -85,6 +90,7 @@ class CityPickers {
           barrierLabel:
               MaterialLocalizations.of(context).modalBarrierDismissLabel,
           child: BaseView(
+              progress: 0,
               isSort: isSort,
               showType: showType,
               height: height,
@@ -99,15 +105,15 @@ class CityPickers {
   }
 
   /// @theme Theme used it's primaryColor
-  static Future<Result> showFullPageCityPicker({
-    @required BuildContext context,
-    ThemeData theme,
+  static Future<Result?> showFullPageCityPicker({
+    required BuildContext context,
+    ThemeData? theme,
     ShowType showType = ShowType.pca,
     String locationCode = '110000',
-    Map<String, dynamic> citiesData,
-    Map<String, dynamic> provincesData,
+    Map<String, dynamic>? citiesData,
+    Map<String, dynamic>? provincesData,
   }) {
-    return Navigator.push(
+    return Navigator.push<Result>(
         context,
         new PageRouteBuilder(
           settings: RouteSettings(name: 'fullPageCityPicker'),
@@ -131,18 +137,18 @@ class CityPickers {
         ));
   }
 
-  static Future<Result> showCitiesSelector({
-    @required BuildContext context,
-    ThemeData theme,
-    bool showAlpha,
-    String locationCode,
+  static Future<Result?> showCitiesSelector({
+    required BuildContext context,
+    ThemeData? theme,
+    bool? showAlpha,
+    String? locationCode,
     String title = '城市选择器',
     Map<String, dynamic> citiesData = meta.citiesData,
     Map<String, dynamic> provincesData = meta.provincesData,
-    List<HotCity> hotCities,
-    BaseStyle sideBarStyle,
-    BaseStyle cityItemStyle,
-    BaseStyle topStickStyle,
+    List<HotCity>? hotCities,
+    BaseStyle? sideBarStyle,
+    BaseStyle? cityItemStyle,
+    BaseStyle? topStickStyle,
   }) {
     BaseStyle _sideBarStyle = BaseStyle(
         fontSize: 14,

@@ -11,7 +11,7 @@ class CityTree {
   Map<String, dynamic> metaInfo;
 
   /// provData user self-defining data
-  Map<String, String> provincesInfo;
+  Map<String, dynamic>? provincesInfo;
   Cache _cache = new Cache();
 
   /// the tree's modal
@@ -36,12 +36,17 @@ class CityTree {
   ///     ]
   ///   }
   /// ]
-  Point tree;
+  Point? tree;
 
   /// @param metaInfo city and areas meta describe
-  CityTree({this.metaInfo = citiesData, this.provincesInfo});
+  CityTree({
+    this.metaInfo: citiesData, 
+    this.provincesInfo
+  });
 
-  Map<String, String> get _provincesData => this.provincesInfo ?? provincesData;
+  Map<String, String> get _provincesData => this.provincesInfo is Map<String, String>? 
+                                                ? (this.provincesInfo as Map<String, String>?) ?? provincesData 
+                                                : provincesData;
 
   /// build tree by int provinceId,
   /// @param provinceId this is province id
@@ -53,7 +58,7 @@ class CityTree {
 //      return tree = _cache.get(_cacheKey);
 //    }
 
-    String name = this._provincesData[provinceId.toString()];
+    String name = this._provincesData[provinceId.toString()]!;
     String letter = PinyinHelper.getFirstWordPinyin(name).substring(0, 1);
     var root =
         new Point(code: provinceId, letter: letter, child: [], name: name);
@@ -65,7 +70,7 @@ class CityTree {
   /// this is a private function, used the return to get a correct tree contain cities and areas
   /// @param code one of province city or area id;
   /// @return provinceId return id which province's child contain code
-  int _getProvinceByCode(int code) {
+  int? _getProvinceByCode(int code) {
     String _code = code.toString();
     List<String> keys = metaInfo.keys.toList();
     for (int i = 0; i < keys.length; i++) {
@@ -90,7 +95,7 @@ class CityTree {
     if (this._provincesData[_code] != null) {
       return initTree(code);
     }
-    int provinceId = _getProvinceByCode(code);
+    int? provinceId = _getProvinceByCode(code);
     if (provinceId != null) {
       return initTree(provinceId);
     }
@@ -100,37 +105,40 @@ class CityTree {
 
   /// private function
   /// recursion to build tree
-  Point _buildTree(Point target, Map citys, Map meta) {
+  Point _buildTree(Point target, Map? citys, Map meta) {
     if (citys == null || citys.isEmpty) {
       return target;
     } else {
-      List<String> keys = citys.keys.toList();
+      List<dynamic> keys = citys.keys.toList();
 
       for (int i = 0; i < keys.length; i++) {
-        String key = keys[i];
-        Map value = citys[key];
-        Point _point = new Point(
-          code: int.parse(key),
-          letter: value['alpha'],
-          child: [],
-          name: value['name'],
-        );
+        if(keys[i] is String) {
+          String key = keys[i];
+          Map value = citys[key];
+          Point _point = new Point(
+            code: int.parse(key),
+            letter: value['alpha'],
+            child: [],
+            name: value['name'],
+          );
 
-        // for avoid the data  error that such as
-        //  "469027": {
-        //        "469027": {
-        //            "name": "乐东黎族自治县",
-        //            "alpha": "l"
-        //        }
-        //    }
-        if (citys.keys.length == 1) {
-          if (target.code.toString() == citys.keys.first) {
-            continue;
+          // for avoid the data  error that such as
+          //  "469027": {
+          //        "469027": {
+          //            "name": "乐东黎族自治县",
+          //            "alpha": "l"
+          //        }
+          //    }
+          if (citys.keys.length == 1) {
+            if (target.code.toString() == citys.keys.first) {
+              continue;
+            }
           }
-        }
 
-        _point = _buildTree(_point, meta[key], meta);
-        target.addChild(_point);
+          _point = _buildTree(_point, meta[key], meta);
+          target.addChild(_point);
+        }
+        
       }
     }
     return target;
@@ -139,26 +147,33 @@ class CityTree {
 
 /// Province Class
 class Provinces {
-  Map<String, String> metaInfo;
+  Map<String, dynamic> metaInfo;
 
   // 是否将省份排序, 进行排序
-  bool sort = true;
-  Provinces({this.metaInfo = provincesData, this.sort});
+  bool sort;
+  Provinces({this.metaInfo = provincesData, this.sort = true});
 
   // 获取省份数据
   get provinces {
     List<Point> provList = [];
     List<String> keys = metaInfo.keys.toList();
     for (int i = 0; i < keys.length; i++) {
-      String name = metaInfo[keys[i]];
-      provList.add(Point(
+      if(metaInfo[keys[i]] != null) {
+        String name = metaInfo[keys[i]]!;
+        provList.add(Point(
           code: int.parse(keys[i]),
           letter: PinyinHelper.getFirstWordPinyin(name).substring(0, 1),
           name: name));
+      }
+      
     }
     if (this.sort == true) {
       provList.sort((Point a, Point b) {
-        return a.letter.compareTo(b.letter);
+        if(a.letter != null && b.letter != null) {
+          return a.letter!.compareTo(b.letter!);
+        }else {
+          return 0;
+        }
       });
     }
 

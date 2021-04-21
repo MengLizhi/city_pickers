@@ -14,9 +14,7 @@ class CityPickerUtil {
   Map<String, dynamic> citiesData;
   Map<String, dynamic> provincesData;
 
-  CityPickerUtil({this.citiesData, this.provincesData})
-      : assert(citiesData != null),
-        assert(provincesData != null);
+  CityPickerUtil({required this.citiesData, required this.provincesData});
 
   Result getAreaResultByCode(String code) {
     Location location =
