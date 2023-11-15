@@ -12,7 +12,7 @@ import '../util.dart';
 
 class BaseView extends StatefulWidget {
   final double progress;
-  final String locationCode;
+  final String? locationCode;
   final ShowType showType;
   final Map<String, dynamic> provincesData;
   final Map<String, dynamic> citiesData;
@@ -36,19 +36,17 @@ class BaseView extends StatefulWidget {
   Widget? confirmWidget;
 
   BaseView(
-      {
-        required this.progress,
-        required this.showType,
-        required this.height,
-        required this.locationCode,
-        required this.citiesData,
-        required this.provincesData,
-        this.itemBuilder,
-        this.itemExtent,
-        this.cancelWidget,
-        this.confirmWidget,
-        required this.isSort
-      });
+      {required this.progress,
+      required this.showType,
+      required this.height,
+      this.locationCode,
+      required this.citiesData,
+      required this.provincesData,
+      this.itemBuilder,
+      this.itemExtent,
+      this.cancelWidget,
+      this.confirmWidget,
+      required this.isSort});
 
   _BaseView createState() => _BaseView();
 }
@@ -59,7 +57,7 @@ class _BaseView extends State<BaseView> {
   FixedExtentScrollController? provinceController;
   FixedExtentScrollController? cityController;
   FixedExtentScrollController? areaController;
-  FixedExtentScrollController? villageController;// 增加第4级(村/镇)选择
+  FixedExtentScrollController? villageController; // 增加第4级(村/镇)选择
 
   // 所有省的列表. 因为性能等综合原因,
   // 没有一次性构建整个以国为根的树. 动态的构建以省为根的树, 效率高.
@@ -69,18 +67,15 @@ class _BaseView extends State<BaseView> {
   Point? targetProvince;
   Point? targetCity;
   Point? targetArea;
-  Point? targetVillage;// 增加第4级(村/镇)选择
+  Point? targetVillage; // 增加第4级(村/镇)选择
 
   @override
   void initState() {
     super.initState();
 
-    provinces =
-        new Provinces(metaInfo: widget.provincesData, sort: widget.isSort)
-            .provinces;
+    provinces = new Provinces(metaInfo: widget.provincesData, sort: widget.isSort).provinces;
 
-    cityTree = new CityTree(
-        metaInfo: widget.citiesData, provincesInfo: widget.provincesData);
+    cityTree = new CityTree(metaInfo: widget.citiesData, provincesInfo: widget.provincesData);
 
     try {
       _initLocation(widget.locationCode);
@@ -94,7 +89,7 @@ class _BaseView extends State<BaseView> {
     provinceController?.dispose();
     cityController?.dispose();
     areaController?.dispose();
-    villageController?.dispose();// 增加第4级(村/镇)选择
+    villageController?.dispose(); // 增加第4级(村/镇)选择
     if (_changeTimer != null && _changeTimer!.isActive) {
       _changeTimer!.cancel();
     }
@@ -103,32 +98,24 @@ class _BaseView extends State<BaseView> {
 
   // 初始化controller, 为了使给定的默认值, 在选框的中心位置
   void _initController() {
-    provinceController = new FixedExtentScrollController(
-        initialItem:
-            provinces.indexWhere((Point p) => p.code == targetProvince?.code));
+    provinceController =
+        new FixedExtentScrollController(initialItem: provinces.indexWhere((Point p) => p.code == targetProvince?.code));
 
-    if(targetProvince != null) {
+    if (targetProvince != null) {
       cityController = new FixedExtentScrollController(
-        initialItem: targetProvince!.child
-            .indexWhere((Point p) => p.code == targetCity?.code));
+          initialItem: targetProvince!.child.indexWhere((Point p) => p.code == targetCity?.code));
     }
 
-    if(targetCity != null) {
+    if (targetCity != null) {
       areaController = new FixedExtentScrollController(
-        initialItem: targetCity!.child
-            .indexWhere((Point p) => p.code == targetArea?.code));
+          initialItem: targetCity!.child.indexWhere((Point p) => p.code == targetArea?.code));
     }
-    
-    if(targetArea != null) {
+
+    if (targetArea != null) {
       // 增加第4级(村/镇)选择
       villageController = new FixedExtentScrollController(
-          initialItem: targetArea!.child
-              .indexWhere((Point p) => p.code == targetVillage?.code));
+          initialItem: targetArea!.child.indexWhere((Point p) => p.code == targetVillage?.code));
     }
-
-    
-
-
   }
 
   // 重置Controller的原因在于, 无法手动去更改initialItem, 也无法通过
@@ -140,7 +127,7 @@ class _BaseView extends State<BaseView> {
 
     cityController = new FixedExtentScrollController(initialItem: 0);
     areaController = new FixedExtentScrollController(initialItem: 0);
-    villageController = new FixedExtentScrollController(initialItem: 0);// 增加第4级(村/镇)选择
+    villageController = new FixedExtentScrollController(initialItem: 0); // 增加第4级(村/镇)选择
     _resetControllerOnce = true;
   }
 
@@ -151,8 +138,7 @@ class _BaseView extends State<BaseView> {
       try {
         _locationCode = int.parse(locationCode);
       } catch (e) {
-        print(ArgumentError(
-            "The Argument locationCode must be valid like: '100000' but get '$locationCode' "));
+        print(ArgumentError("The Argument locationCode must be valid like: '100000' but get '$locationCode' "));
         return;
       }
 
@@ -163,7 +149,7 @@ class _BaseView extends State<BaseView> {
       targetProvince = cityTree?.initTreeByCode(_locationCode);
 
       /// 为用户给出的locationCode不正确做一个容错
-      if ( targetProvince == null && provinces.first.code != null) {
+      if (targetProvince == null && provinces.first.code != null) {
         targetProvince = cityTree!.initTreeByCode(provinces.first.code!);
       }
       targetProvince?.child.forEach((Point _city) {
@@ -192,8 +178,7 @@ class _BaseView extends State<BaseView> {
       });
     } else {
       /// 本来默认想定在北京, 但是由于有可能出现用户的省份数据为不包含北京, 所以采用第一个省份做为初始
-      targetProvince =
-          cityTree?.initTreeByCode(int.parse(widget.provincesData.keys.first));
+      targetProvince = cityTree?.initTreeByCode(int.parse(widget.provincesData.keys.first));
     }
     // 尝试试图匹配到下一个级别的第一个,
     if (targetCity == null) {
@@ -255,13 +240,12 @@ class _BaseView extends State<BaseView> {
       _changeTimer!.cancel();
     }
     _changeTimer = new Timer(Duration(milliseconds: 500), () {
-      Point _provinceTree =
-          cityTree!.initTree(int.parse(_province.code.toString()));
+      Point _provinceTree = cityTree!.initTree(int.parse(_province.code.toString()));
       setState(() {
         targetProvince = _provinceTree;
         targetCity = _getTargetChildFirst(_provinceTree);
         targetArea = _getTargetChildFirst(targetCity!);
-        targetVillage = _getTargetChildFirst(targetArea!);// 增加第4级(村/镇)选择
+        targetVillage = _getTargetChildFirst(targetArea!); // 增加第4级(村/镇)选择
         _resetController();
       });
     });
@@ -361,7 +345,7 @@ class _BaseView extends State<BaseView> {
           children: <Widget>[
             new Row(
               children: <Widget>[
-                FlatButton(
+                TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -373,7 +357,7 @@ class _BaseView extends State<BaseView> {
                         ),
                       ),
                 ),
-                FlatButton(
+                TextButton(
                   onPressed: () {
                     Navigator.pop(context, _buildResult());
                   },
@@ -417,7 +401,7 @@ class _BaseView extends State<BaseView> {
                     value: targetCity == null ? '' : targetCity!.name,
                     itemList: getCityItemList(),
                     changed: (index) {
-                      if(targetProvince != null) {
+                      if (targetProvince != null) {
                         _onCityChange(targetProvince!.child[index]);
                       }
                     },
@@ -432,12 +416,13 @@ class _BaseView extends State<BaseView> {
                     height: widget.height,
                     itemList: getAreaItemList(),
                     changed: (index) {
-                      if(targetArea != null) {
+                      if (targetArea != null) {
                         _onAreaChange(targetCity!.child[index]);
                       }
                     },
                   ),
-                  new _MyCityPicker(// 增加第4级(村/镇)选择
+                  new _MyCityPicker(
+                    // 增加第4级(村/镇)选择
                     key: Key('villages $targetArea'),
                     isShow: widget.showType.contain(ShowType.v),
                     controller: villageController!,
@@ -447,7 +432,7 @@ class _BaseView extends State<BaseView> {
                     height: widget.height,
                     itemList: getVillageItemList(),
                     changed: (index) {
-                      if(targetArea != null) {
+                      if (targetArea != null) {
                         _onVillageChange(targetArea!.child[index]);
                       }
                     },
@@ -465,13 +450,11 @@ class _BaseView extends State<BaseView> {
       animation: route.animation!,
       builder: (BuildContext context, Widget? child) {
         return new CustomSingleChildLayout(
-          delegate: _WrapLayout(
-              progress: route.animation!.value, height: widget.height),
+          delegate: _WrapLayout(progress: route.animation!.value, height: widget.height),
           child: new GestureDetector(
             child: new Material(
               color: Colors.transparent,
-              child:
-                  new Container(width: double.infinity, child: _bottomBuild()),
+              child: new Container(width: double.infinity, child: _bottomBuild()),
             ),
           ),
         );
@@ -494,17 +477,15 @@ class _MyCityPicker extends StatefulWidget {
   double? itemExtent;
 
   _MyCityPicker(
-      {
-        required this.key,
-        required this.controller,
-        this.isShow = false,
-        required this.changed,
-        required this.height,
-        required this.itemList,
-        this.itemExtent,
-        this.itemBuilder,
-        required this.value
-      });
+      {required this.key,
+      required this.controller,
+      this.isShow = false,
+      required this.changed,
+      required this.height,
+      required this.itemList,
+      this.itemExtent,
+      this.itemBuilder,
+      required this.value});
 
   @override
   State createState() {
@@ -546,8 +527,7 @@ class _MyCityPickerState extends State<_MyCityPicker> {
               },
               itemBuilder: (context, index) {
                 if (widget.itemBuilder != null) {
-                  return widget.itemBuilder!(
-                      widget.itemList[index], widget.itemList, index);
+                  return widget.itemBuilder!(widget.itemList[index], widget.itemList, index);
                 }
 
                 String text = widget.itemList[index];
@@ -556,28 +536,26 @@ class _MyCityPickerState extends State<_MyCityPicker> {
                 double fontSize = 13;
                 if (text != null) {
                   int len = text.length;
-                  if (len >=1 && len<= 3) {
+                  if (len >= 1 && len <= 3) {
                     fontSize = 20;
-                  } else if (len > 3 && len <=4) {
+                  } else if (len > 3 && len <= 4) {
                     fontSize = 18;
-                  } else if(len > 4 && len <=5) {
+                  } else if (len > 4 && len <= 5) {
                     fontSize = 16;
-                  } else if(len > 5 && len <=6) {
+                  } else if (len > 5 && len <= 6) {
                     fontSize = 12;
-                  } else if(len > 6 && len <=9) {
+                  } else if (len > 6 && len <= 9) {
                     fontSize = 10;
-                  } else if(len > 9) {
+                  } else if (len > 9) {
                     fontSize = 7;
                   }
                 }
                 return Center(
                   child: Text(
                     '$text',
-                    overflow: TextOverflow.ellipsis,// 字数过多时显示省略号
+                    overflow: TextOverflow.ellipsis, // 字数过多时显示省略号
                     maxLines: 1,
-                    style: TextStyle(
-                      fontSize: fontSize
-                    ),
+                    style: TextStyle(fontSize: fontSize),
                   ),
                 );
               },
@@ -588,7 +566,6 @@ class _MyCityPickerState extends State<_MyCityPicker> {
 }
 
 class _WrapLayout extends SingleChildLayoutDelegate {
-
   final double progress;
   final double height;
 
@@ -596,7 +573,6 @@ class _WrapLayout extends SingleChildLayoutDelegate {
     required this.progress,
     required this.height,
   });
-
 
   @override
   BoxConstraints getConstraintsForChild(BoxConstraints constraints) {

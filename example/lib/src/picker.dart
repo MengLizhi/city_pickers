@@ -16,24 +16,27 @@ class PickerItem {
   String name;
   dynamic value;
 
-  PickerItem({this.name, this.value});
+  PickerItem({required this.name, this.value});
 }
 
 class Picker extends StatefulWidget {
   final List<PickerItem> items;
   final Widget target;
-  final ValueChanged<PickerItem> onConfirm;
+  final ValueChanged<PickerItem>? onConfirm;
 
-  Picker({this.onConfirm, @required this.target, @required this.items});
+  Picker({
+    this.onConfirm,
+    required this.target,
+    required this.items,
+  });
 
   @override
   _PickerState createState() => _PickerState();
 }
 
 class _PickerState extends State<Picker> {
-  ScrollController scrollController =
-      new FixedExtentScrollController(initialItem: 0);
-  PickerItem result;
+  FixedExtentScrollController scrollController = new FixedExtentScrollController(initialItem: 0);
+  late PickerItem result;
 
   @override
   void initState() {
@@ -95,7 +98,7 @@ class _PickerState extends State<Picker> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              FlatButton(
+                              TextButton(
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
@@ -106,7 +109,7 @@ class _PickerState extends State<Picker> {
                                   ),
                                 ),
                               ),
-                              FlatButton(
+                              TextButton(
                                 onPressed: () {
                                   Navigator.of(context).pop(result);
                                 },
@@ -128,7 +131,9 @@ class _PickerState extends State<Picker> {
                 );
               },
             );
-            widget.onConfirm(result);
+            if (widget.onConfirm != null) {
+              widget.onConfirm!(result);
+            }
           },
           child: widget.target,
         ));

@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 class ItemContainer extends StatefulWidget {
   final List itemList;
 
-  ItemContainer({this.itemList});
+  ItemContainer({required this.itemList});
 
   @override
   _ItemContainerState createState() => _ItemContainerState();
@@ -37,15 +37,12 @@ class _ItemContainerState extends State<ItemContainer> {
           child: Container(
             decoration: new BoxDecoration(
                 border: (index + 1) % 3 != 0
-                    ? Border(
-                        right: BorderSide(
-                            color: Theme.of(context).dividerColor, width: 1.0))
+                    ? Border(right: BorderSide(color: Theme.of(context).dividerColor, width: 1.0))
                     : null),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Icon(lists[index]['icon'],
-                    color: Theme.of(context).primaryColor),
+                Icon(lists[index]['icon'], color: Theme.of(context).primaryColor),
                 SizedBox(
                   height: 8.0,
                 ),

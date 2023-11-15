@@ -21,21 +21,19 @@ class LocationSelector extends StatelessWidget {
   final ValueChanged<Result> onConfirm;
 
   /// initResult type[Result]
-  final Result initResult;
+  final Result? initResult;
 
-  LocationSelector(
-      {this.showType = ShowType.pca,
-      this.initResult,
-      @required this.target,
-      @required this.onConfirm});
+  LocationSelector({
+    this.showType = ShowType.pca,
+    this.initResult,
+    required this.target,
+    required this.onConfirm,
+  });
 
   show(BuildContext context) async {
-    Result result = await CityPickers.showCityPicker(
-      
+    Result? result = await CityPickers.showCityPicker(
         context: context,
-        locationCode: initResult != null
-            ? initResult.areaId ?? initResult.cityId ?? initResult.provinceId
-            : null,
+        locationCode: initResult != null ? initResult?.areaId ?? initResult?.cityId ?? initResult?.provinceId : null,
         showType: showType);
     if (result != null) {
       onConfirm(result);

@@ -34,13 +34,11 @@ class _ShowCityPickerState extends State<ShowCityPicker> {
   bool customerButtons = false;
   bool isSort = false;
 
-  PickerItem themeAttr;
+  PickerItem? themeAttr;
 
   Widget _buildShowTypes() {
     return Picker(
-      target: showTypeAttr != null && showTypeAttr.name != null
-          ? Text(showTypeAttr.name)
-          : Text("显示几级联动"),
+      target: showTypeAttr != null && showTypeAttr.name != null ? Text(showTypeAttr.name) : Text("显示几级联动"),
       onConfirm: (PickerItem item) {
         setState(() {
           showTypeAttr = item;
@@ -64,8 +62,7 @@ class _ShowCityPickerState extends State<ShowCityPicker> {
         Expanded(
           flex: 1,
           child: LocationSelector(
-            target: Text("${resultAttr.provinceName ?? '省'}",
-                maxLines: 1, overflow: TextOverflow.ellipsis),
+            target: Text("${resultAttr.provinceName ?? '省'}", maxLines: 1, overflow: TextOverflow.ellipsis),
             showType: ShowType.p,
             initResult: resultAttr,
             onConfirm: (Result result) {
@@ -80,8 +77,7 @@ class _ShowCityPickerState extends State<ShowCityPicker> {
         Expanded(
           flex: 1,
           child: LocationSelector(
-            target: Text("${resultAttr.cityName ?? '市'}",
-                maxLines: 1, overflow: TextOverflow.ellipsis),
+            target: Text("${resultAttr.cityName ?? '市'}", maxLines: 1, overflow: TextOverflow.ellipsis),
             showType: ShowType.c,
             initResult: resultAttr,
             onConfirm: (Result result) {
@@ -96,8 +92,7 @@ class _ShowCityPickerState extends State<ShowCityPicker> {
         Expanded(
           flex: 1,
           child: LocationSelector(
-            target: Text("${resultAttr.areaName ?? '区'}",
-                maxLines: 1, overflow: TextOverflow.ellipsis),
+            target: Text("${resultAttr.areaName ?? '区'}", maxLines: 1, overflow: TextOverflow.ellipsis),
             showType: ShowType.a,
             initResult: resultAttr,
             onConfirm: (Result result) {
@@ -112,8 +107,7 @@ class _ShowCityPickerState extends State<ShowCityPicker> {
         Expanded(
           flex: 1,
           child: LocationSelector(
-            target: Text("${resultAttr.villageName ?? '乡'}",
-                maxLines: 1, overflow: TextOverflow.ellipsis),
+            target: Text("${resultAttr.villageName ?? '乡'}", maxLines: 1, overflow: TextOverflow.ellipsis),
             showType: ShowType.a,
             initResult: resultAttr,
             onConfirm: (Result result) {
@@ -246,9 +240,7 @@ class _ShowCityPickerState extends State<ShowCityPicker> {
 
   Widget _buildTheme() {
     return Picker(
-        target: themeAttr != null && themeAttr.name != null
-            ? Text(themeAttr.name)
-            : Text("主题切换"),
+        target: themeAttr != null && themeAttr?.name != null ? Text(themeAttr!.name) : Text("主题切换"),
         onConfirm: (PickerItem item) {
           setState(() {
             themeAttr = item;
@@ -265,8 +257,7 @@ class _ShowCityPickerState extends State<ShowCityPicker> {
   getItemBuilder() {
     if (customerItemBuilder) {
       return (item, list, index) {
-        return Center(
-            child: Text(item, maxLines: 1, style: TextStyle(fontSize: 55)));
+        return Center(child: Text(item, maxLines: 1, style: TextStyle(fontSize: 55)));
       };
     } else {
       return null;
@@ -279,34 +270,29 @@ class _ShowCityPickerState extends State<ShowCityPicker> {
       appBar: AppBar(
         title: Text("ios风格城市选择器"),
       ),
-      body: SingleChildScrollView(// 防止边界超出
+      body: SingleChildScrollView(
+        // 防止边界超出
         child: Column(
           children: <Widget>[
             AttrItemContainer(title: '级联方式', editor: _buildShowTypes()),
             AttrItemContainer(title: '默认地址', editor: _buildDefaultLocation()),
             AttrItemContainer(title: '背景透明度', editor: _buildBarrierOpacity()),
             AttrItemContainer(title: '选中区域高度', editor: _buildItemExtent()),
-            AttrItemContainer(
-                title: '背景点击关闭', editor: _buildBarrierDismissible()),
+            AttrItemContainer(title: '背景点击关闭', editor: _buildBarrierDismissible()),
             AttrItemContainer(title: '是否采用自定义数据', editor: _buildCustomerMeta()),
-            AttrItemContainer(
-                title: '是否采用自定义的头部按钮', editor: _buildCustomerButtons()),
+            AttrItemContainer(title: '是否采用自定义的头部按钮', editor: _buildCustomerButtons()),
             AttrItemContainer(title: '自定义item渲染', editor: _buildCustomerItem()),
             AttrItemContainer(title: '数据是否排序', editor: _buildSortItem()),
             AttrItemContainer(title: '主题选择', editor: _buildTheme()),
-            AttrItemContainer(
-                title: '选择结果', editor: Text("${result.toString()}")),
-            RaisedButton(
+            AttrItemContainer(title: '选择结果', editor: Text("${result.toString()}")),
+            ElevatedButton(
               onPressed: () async {
                 print("locationCode $resultAttr");
-                Result tempResult = await CityPickers.showCityPicker(
+                Result? tempResult = await CityPickers.showCityPicker(
                     context: context,
-                    theme: themeAttr != null ? themeAttr.value : null,
-                    locationCode: resultAttr != null
-                        ? resultAttr.areaId ??
-                        resultAttr.cityId ??
-                        resultAttr.provinceId
-                        : null,
+                    theme: themeAttr != null ? themeAttr!.value : null,
+                    locationCode:
+                        resultAttr != null ? resultAttr.areaId ?? resultAttr.cityId ?? resultAttr.provinceId : null,
                     showType: showTypeAttr.value,
                     isSort: isSort,
                     barrierOpacity: barrierOpacityAttr,

@@ -86,7 +86,7 @@ class WorkInProgressState extends State<WorkInProgress> {
               userSelfMeta = !userSelfMeta;
             });
           },
-    ));
+        ));
   }
 
   Widget _buildTopIndexHeight() {
@@ -165,7 +165,7 @@ class WorkInProgressState extends State<WorkInProgress> {
   }
 
   toggle(BuildContext context) async {
-    Result tempResult = await CityPickers.showCitiesSelector(
+    Result? tempResult = await CityPickers.showCitiesSelector(
         context: context,
         title: title,
         locationCode: '110100',
@@ -175,7 +175,6 @@ class WorkInProgressState extends State<WorkInProgress> {
           HotCity(id: 0, name: '北京'),
           HotCity(id: 1, name: '沈阳'),
           HotCity(id: 2, name: '天津'),
-
         ],
         sideBarStyle: BaseStyle(
             fontSize: tagBarFontSize,
@@ -183,10 +182,7 @@ class WorkInProgressState extends State<WorkInProgress> {
             backgroundColor: tagBgColor,
             backgroundActiveColor: tagBgActiveColor,
             activeColor: tagFontActiveColor),
-        cityItemStyle: BaseStyle(
-            fontSize: cityItemFontSize,
-            color: itemFontColor,
-            activeColor: itemSelectFontColor),
+        cityItemStyle: BaseStyle(fontSize: cityItemFontSize, color: itemFontColor, activeColor: itemSelectFontColor),
         topStickStyle: BaseStyle(
             fontSize: topIndexFontSize,
             color: topIndexFontColor,
@@ -266,8 +262,7 @@ class WorkInProgressState extends State<WorkInProgress> {
             AttrItemContainer(
               title: '边栏字体激活颜色',
               editor: ColorPickers(
-                target:
-                    Text('选择颜色', style: TextStyle(color: tagFontActiveColor)),
+                target: Text('选择颜色', style: TextStyle(color: tagFontActiveColor)),
                 initColor: tagFontActiveColor,
                 onConfirm: (Color color) {
                   this.setState(() {
@@ -277,10 +272,8 @@ class WorkInProgressState extends State<WorkInProgress> {
               ),
             ),
             AttrItemContainer(title: 'tag集字体大小', editor: _buildBarFontSize()),
-            AttrItemContainer(
-                title: '城市item字体大小', editor: _buildCityItemFontSize()),
-            AttrItemContainer(
-                title: '顶部tag分类高度', editor: _buildTopIndexHeight()),
+            AttrItemContainer(title: '城市item字体大小', editor: _buildCityItemFontSize()),
+            AttrItemContainer(title: '顶部tag分类高度', editor: _buildTopIndexHeight()),
             AttrItemContainer(
 //              topIndexFontSize
                 title: '顶部tag分类字体大小',
@@ -289,8 +282,7 @@ class WorkInProgressState extends State<WorkInProgress> {
 //              topIndexFontSize
               title: '顶部tag分类字体颜色',
               editor: ColorPickers(
-                target:
-                    Text('选择颜色', style: TextStyle(color: topIndexFontColor)),
+                target: Text('选择颜色', style: TextStyle(color: topIndexFontColor)),
                 initColor: topIndexFontColor,
                 onConfirm: (Color color) {
                   this.setState(() {
@@ -326,8 +318,7 @@ class WorkInProgressState extends State<WorkInProgress> {
             AttrItemContainer(
               title: '城市item选中字体颜色',
               editor: ColorPickers(
-                target:
-                    Text('选择颜色', style: TextStyle(color: itemSelectFontColor)),
+                target: Text('选择颜色', style: TextStyle(color: itemSelectFontColor)),
                 initColor: itemSelectFontColor,
                 onConfirm: (Color color) {
                   this.setState(() {
@@ -339,8 +330,7 @@ class WorkInProgressState extends State<WorkInProgress> {
             AttrItemContainer(
               title: '城市item选中背景颜色',
               editor: ColorPickers(
-                target:
-                    Text('选择颜色', style: TextStyle(color: itemSelectBgColor)),
+                target: Text('选择颜色', style: TextStyle(color: itemSelectBgColor)),
                 initColor: itemSelectBgColor,
                 onConfirm: (Color color) {
                   this.setState(() {
@@ -353,9 +343,8 @@ class WorkInProgressState extends State<WorkInProgress> {
               title: '使用自定义数据',
               editor: _buildSelfMetaButtons(),
             ),
-            AttrItemContainer(
-                title: '选择结果', editor: Text("${result.toString()}")),
-            RaisedButton(
+            AttrItemContainer(title: '选择结果', editor: Text("${result.toString()}")),
+            ElevatedButton(
               child: Text('呼出'),
               onPressed: () {
                 toggle(context);

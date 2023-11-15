@@ -27,29 +27,30 @@ class _Demo extends State<UtilGetLocationInfo> {
       print("result>>>> ${result.toString()}");
     });
   }
+
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-        title: Text("解析locationCode"),
-    ),
-    body: Column(
-      children: <Widget>[
-        AttrItemContainer(
-          title: '标题1111',
-          editor: TextField(
-            keyboardType: TextInputType.number,
-            autofocus: false,
-            controller: TextEditingController(text: code),
-            onChanged: (String value) {
-              this.setState(() {
-                code = value;
-              });
-            },
-          ),
+          title: Text("解析locationCode"),
         ),
-        Text("地址信息为: ${result.toString()}"),
-        RaisedButton(child: Text('touch me 解析 $code '),onPressed: this.buttonHandle)
-      ],
-    ));
+        body: Column(
+          children: <Widget>[
+            AttrItemContainer(
+              title: '标题1111',
+              editor: TextField(
+                keyboardType: TextInputType.number,
+                autofocus: false,
+                controller: TextEditingController(text: code),
+                onChanged: (String value) {
+                  this.setState(() {
+                    code = value;
+                  });
+                },
+              ),
+            ),
+            Text("地址信息为: ${result.toString()}"),
+            ElevatedButton(child: Text('touch me 解析 $code '), onPressed: this.buttonHandle)
+          ],
+        ));
   }
 }

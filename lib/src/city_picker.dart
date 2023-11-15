@@ -34,11 +34,7 @@ class CityPickers {
   /// static original province data for this plugin
   static Map<String, dynamic> metaProvinces = meta.provincesData;
 
-  static utils(
-      {
-        Map<String, dynamic>? provinceData, 
-        Map<String, dynamic>? citiesData
-      }) {
+  static utils({Map<String, dynamic>? provinceData, Map<String, dynamic>? citiesData}) {
     print("CityPickers.metaProvinces::: ${CityPickers.metaCities}");
     return CityPickerUtil(
       provincesData: provinceData ?? CityPickers.metaProvinces,
@@ -65,42 +61,40 @@ class CityPickers {
   /// @return Result see [Result]
   ///
   static Future<Result?> showCityPicker(
-      {
-        required BuildContext context,
-        showType = ShowType.pca,
-        double height = 400.0,
-        String locationCode = '110000',
-        ThemeData? theme,
-        Map<String, dynamic>? citiesData,
-        Map<String, dynamic>? provincesData,
-        // CityPickerRoute params
-        bool barrierDismissible = true,
-        double barrierOpacity = 0.5,
-        ItemWidgetBuilder? itemBuilder,
-        double? itemExtent,
-        Widget? cancelWidget,
-        Widget? confirmWidget,
-        bool isSort = false
-      }) {
+      {required BuildContext context,
+      showType = ShowType.pca,
+      double height = 400.0,
+      String? locationCode = '110000',
+      ThemeData? theme,
+      Map<String, dynamic>? citiesData,
+      Map<String, dynamic>? provincesData,
+      // CityPickerRoute params
+      bool barrierDismissible = true,
+      double barrierOpacity = 0.5,
+      ItemWidgetBuilder? itemBuilder,
+      double? itemExtent,
+      Widget? cancelWidget,
+      Widget? confirmWidget,
+      bool isSort = false}) {
     return Navigator.of(context, rootNavigator: true).push<Result>(
       new CityPickerRoute(
           theme: theme ?? Theme.of(context),
           canBarrierDismiss: barrierDismissible,
           barrierOpacity: barrierOpacity,
-          barrierLabel:
-              MaterialLocalizations.of(context).modalBarrierDismissLabel,
+          barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
           child: BaseView(
-              progress: 0,
-              isSort: isSort,
-              showType: showType,
-              height: height,
-              itemExtent: itemExtent,
-              itemBuilder: itemBuilder,
-              cancelWidget: cancelWidget,
-              confirmWidget: confirmWidget,
-              citiesData: citiesData ?? meta.citiesData,
-              provincesData: provincesData ?? meta.provincesData,
-              locationCode: locationCode)),
+            progress: 0,
+            isSort: isSort,
+            showType: showType,
+            height: height,
+            itemExtent: itemExtent,
+            itemBuilder: itemBuilder,
+            cancelWidget: cancelWidget,
+            confirmWidget: confirmWidget,
+            citiesData: citiesData ?? meta.citiesData,
+            provincesData: provincesData ?? meta.provincesData,
+            locationCode: locationCode,
+          )),
     );
   }
 
@@ -109,7 +103,7 @@ class CityPickers {
     required BuildContext context,
     ThemeData? theme,
     ShowType showType = ShowType.pca,
-    String locationCode = '110000',
+    String? locationCode = '110000',
     Map<String, dynamic>? citiesData,
     Map<String, dynamic>? provincesData,
   }) {
@@ -122,18 +116,16 @@ class CityPickers {
               data: theme ?? Theme.of(context),
               child: FullPage(
                 showType: showType,
-                locationCode: locationCode,
+                locationCode: locationCode ?? '',
                 citiesData: citiesData ?? meta.citiesData,
                 provincesData: provincesData ?? meta.provincesData,
               )),
-          transitionsBuilder:
-              (_, Animation<double> animation, __, Widget child) =>
-                  new SlideTransition(
-                      position: new Tween<Offset>(
-                        begin: Offset(0.0, 1.0),
-                        end: Offset(0.0, 0.0),
-                      ).animate(animation),
-                      child: child),
+          transitionsBuilder: (_, Animation<double> animation, __, Widget child) => new SlideTransition(
+              position: new Tween<Offset>(
+                begin: Offset(0.0, 1.0),
+                end: Offset(0.0, 0.0),
+              ).animate(animation),
+              child: child),
         ));
   }
 
@@ -165,11 +157,8 @@ class CityPickers {
     );
     _cityItemStyle = _cityItemStyle.merge(cityItemStyle);
 
-    BaseStyle _topStickStyle = BaseStyle(
-        fontSize: 16,
-        height: 40,
-        color: defaultTopIndexFontColor,
-        backgroundColor: defaultTopIndexBgColor);
+    BaseStyle _topStickStyle =
+        BaseStyle(fontSize: 16, height: 40, color: defaultTopIndexFontColor, backgroundColor: defaultTopIndexBgColor);
 
     _topStickStyle = _topStickStyle.merge(topStickStyle);
     return Navigator.push(
@@ -197,15 +186,12 @@ class CityPickers {
                   itemFontColor: _cityItemStyle.color,
                   cityItemFontSize: _cityItemStyle.fontSize,
                   itemSelectFontColor: _cityItemStyle.activeColor)),
-          transitionsBuilder:
-              (_, Animation<double> animation, __, Widget child) =>
-                  new SlideTransition(
-                      position: new Tween<Offset>(
-                        begin: Offset(0.0, 1.0),
-                        end: Offset(0.0, 0.0),
-                      ).animate(animation),
-                      child: child),
+          transitionsBuilder: (_, Animation<double> animation, __, Widget child) => new SlideTransition(
+              position: new Tween<Offset>(
+                begin: Offset(0.0, 1.0),
+                end: Offset(0.0, 0.0),
+              ).animate(animation),
+              child: child),
         ));
   }
 }
-
