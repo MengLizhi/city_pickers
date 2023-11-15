@@ -1,10 +1,10 @@
 name: city_pickers
 description:  Flutter plugin for city picker,  Popups widgets, call by function,  support china.
-version: 0.3.0
+version: 0.4.0
 homepage: https://github.com/hanxu317317/city_pickers
 
 dev_dependencies:
-  flutter_colorpicker: ^0.4.0
+  flutter_colorpicker: ^1.0.3
 
 dependencies:
   flutter:
